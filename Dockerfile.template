@@ -1,0 +1,36 @@
+FROM codercom/code-server:latest AS code-server
+FROM crops/yocto:ubuntu-@UBUNTU_VERSION@-base
+
+USER root
+
+ADD resources/shell-wrapper /usr/bin/shell-wrapper
+ADD resources/install_clean /usr/bin/install_clean
+ADD resources/yocto-env /opt/tools/yocto-env
+
+RUN install_clean vim git wget libncurses5-dev python3-distutils
+
+# install vs-code
+COPY --from=code-server /usr/lib/code-server /opt/code-server
+RUN rm /opt/code-server/code-server
+ADD resources/code-server.yaml /opt/
+
+ # Set the locale
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# Add tools to PATH
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/code-server:/opt/code-server/bin:/opt/tools
+
+ADD @ENV_FOLDER@ /opt/tools
+RUN install_clean jq @EXTRA_PKGS@
+
+# Expose port 8080 (vs-code) and 8000 (free to play)
+EXPOSE 8080
+EXPOSE 8000
+USER yoctouser
+CMD shell-wrapper
+
+#:vim syntax=dockerfile

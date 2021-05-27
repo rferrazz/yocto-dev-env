@@ -1,0 +1,59 @@
+#!/bin/bash
+
+set -e
+set -u
+
+TOOLS_PATH="/opt/tools"
+JCONF=${CONFIG:-"${TOOLS_PATH}/manifest.json"}
+MACHINE=${MACHINE:-`jq -r '.machine' ${JCONF}`}
+
+directory=${HOME}/src
+
+function main {
+    mkdir -p ${directory}
+    cd ${directory}
+    fetch_yocto
+    start_subshell
+}
+
+function checkout {
+    revision=${4:-"HEAD"}
+
+    echo "Cloning $1"
+    git clone $2 -b $3 $1
+    pushd $1
+        git checkout ${revision}
+    popd
+}
+
+function extract {
+    echo "Extracting $2"
+    tar -xf $2 $1
+}
+
+function fetch_yocto {
+    mkdir -p yocto/src
+    pushd yocto/src
+        jq -c '.layers[]' ${JCONF} | while read i; do
+            path=$(jq -r '.path' <<< $i)
+            if [[ ! -d ${path} ]]; then
+                method=$(jq -r '.method' <<< $i)
+                args=$(jq -r '.args | @sh' <<< $i)
+                eval "$method $path $args"
+            fi
+        done
+    popd
+}
+
+function start_subshell {
+    cd yocto
+    set +u
+    export MACHINE=${MACHINE}
+    export PROMPT_COMMAND="PS1='(yocto) \[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '"
+    export TEMPLATECONF="/opt/tools/defconfig"
+
+    source src/poky/oe-init-build-env "build-${MACHINE}"
+    exec bash -i
+}
+
+main ${@}
