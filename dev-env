@@ -2,7 +2,7 @@
 
 set -e
 
-VOLUME_NAME=${1:?"Use $0 <chik> to start the development environment"}
+VOLUME_NAME=${1:?"Use $0 <environment_folder> to start the development environment"}
 FREE_PORT=${2:-8000}
 CODE_PORT=${3:-8080}
 
