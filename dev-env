@@ -9,32 +9,32 @@ CODE_PORT=${3:-8080}
 function extract_payload {
     match=$(grep --text --line-number '^PAYLOAD:$' $0 | cut -d ':' -f 1)
 	payload_start=$((match + 1))
-    tail -n +$payload_start $0 | tar -C $1 -xzf -
+    tail -n +$payload_start $0 | tar -xzf -
 }
 
 # $1 workdir
 function create_dockerfile {
     ubuntu_version=`jq -cr '.host_ubuntu_version' ${VOLUME_NAME}/manifest.json`
     extra_pkgs=`jq -cr '.extra_pkgs // ""' ${VOLUME_NAME}/manifest.json`
-    mv $1/Dockerfile.template Dockerfile
+    mv Dockerfile.template Dockerfile
     sed -i "" -e "s/@UBUNTU_VERSION@/${ubuntu_version}/" Dockerfile
     sed -i "" -e "s/@EXTRA_PKGS@/${extra_pkgs}/" Dockerfile
     sed -i "" -e "s/@ENV_FOLDER@/${VOLUME_NAME}/" Dockerfile
 }
 
-function create_volume {
+function create_container {
     if [[ $(docker volume ls --filter "name=${VOLUME_NAME}" -q | wc -l ) -eq 0 ]]; then
         echo "creating volume and copying setup script into it"
         docker volume create --name ${VOLUME_NAME}
         docker run -it --rm -v ${VOLUME_NAME}:/workdir busybox \
             /bin/sh -c "mkdir -p /workdir/src && chown -R 1000:1000 /workdir"
     fi
+
+    echo "Building the development container"
+    docker build -t ${VOLUME_NAME} -f Dockerfile .
 }
 
 function start_container {
-    echo "Building the development container"
-    docker build -t ${VOLUME_NAME} -f Dockerfile .
-
     echo "Cleaning up old containers"
     docker rmi $(docker images -qa -f 'dangling=true') || echo "Nothing to remove"
 
@@ -43,11 +43,10 @@ function start_container {
 }
 
 function main {
-    workdir=`mktemp -d`
-    extract_payload $workdir
-    create_dockerfile $workdir
-    rm -rf $workdir
-    create_volume
+    extract_payload
+    create_dockerfile
+    create_container
+    rm -rf resources
     start_container
 }
 
