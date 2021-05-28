@@ -46,7 +46,7 @@ function main {
     extract_payload
     create_dockerfile
     create_container
-    rm -rf resources
+    rm -rf resources Dockerfile
     start_container
 }
 
