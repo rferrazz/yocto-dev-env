@@ -39,7 +39,7 @@ function start_container {
     docker rmi $(docker images -qa -f 'dangling=true') || echo "Nothing to remove"
 
     echo "Starting the development container"
-    docker run --rm -it --privileged -v ${VOLUME_NAME}:/home/yoctouser -p ${FREE_PORT}:8000 -p ${CODE_PORT}:8080 ${VOLUME_NAME}
+    docker run --rm -it -v ${VOLUME_NAME}:/home/yoctouser -p ${FREE_PORT}:8000 -p ${CODE_PORT}:8080 ${VOLUME_NAME}
 }
 
 function main {
