@@ -8,6 +8,8 @@ A self contained bash script that given a configuration folder creates a Docker 
 
 ## Usage
 
+Here an example of a project using it: https://github.com/GoChik/yocto-env
+
 ### Dependencies
 
 The environment works on Linux, MAC-OS and Windows (tested with Docker for windows and WSL1/2). It requires the bash shell, Docker and [jq](https://stedolan.github.io/jq/).
