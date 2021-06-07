@@ -7,7 +7,7 @@ ADD resources/shell-wrapper /usr/bin/shell-wrapper
 ADD resources/install_clean /usr/bin/install_clean
 ADD resources/yocto-env /opt/tools/yocto-env
 
-RUN install_clean vim git wget libncurses5-dev python3-distutils
+RUN install_clean vim git wget libncurses5-dev
 
 # install vs-code
 COPY --from=code-server /usr/lib/code-server /opt/code-server
