@@ -16,10 +16,10 @@ function extract_payload {
 function create_dockerfile {
     ubuntu_version=`jq -cr '.host_ubuntu_version' ${VOLUME_NAME}/manifest.json`
     extra_pkgs=`jq -r '.extra_pkgs // "" | @sh' ${VOLUME_NAME}/manifest.json`
-    mv Dockerfile.template Dockerfile
-    sed -i "" -e "s/@UBUNTU_VERSION@/${ubuntu_version}/" Dockerfile
-    sed -i "" -e "s/@EXTRA_PKGS@/${extra_pkgs}/" Dockerfile
-    sed -i "" -e "s/@ENV_FOLDER@/${VOLUME_NAME}/" Dockerfile
+    sed -e "\
+    s/@UBUNTU_VERSION@/${ubuntu_version}/;\
+    s/@EXTRA_PKGS@/${extra_pkgs}/;\
+    s/@ENV_FOLDER@/${VOLUME_NAME}/" Dockerfile.template > Dockerfile
 }
 
 function create_container {
@@ -46,7 +46,7 @@ function main {
     extract_payload
     create_dockerfile
     create_container
-    rm -rf resources Dockerfile
+    rm -rf resources Dockerfile*
     start_container
 }
 
