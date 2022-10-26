@@ -6,7 +6,7 @@ ADD resources/shell-wrapper /usr/bin/shell-wrapper
 ADD resources/install_clean /usr/bin/install_clean
 ADD resources/yocto-env /opt/tools/yocto-env
 
-RUN install_clean vim git wget curl libncurses5-dev
+RUN install_clean vim git wget curl libncurses5-dev sudo
 
 # install vs-code
 ENV CODE_VERSION "4.8.0"
@@ -30,6 +30,7 @@ RUN install_clean jq @EXTRA_PKGS@
 # Expose port 8080 (vs-code) and 8000 (free to play)
 EXPOSE 8080
 EXPOSE 8000
+RUN echo "yoctouser:yoctouser" | chpasswd && adduser yoctouser sudo
 USER yoctouser
 CMD shell-wrapper
 
