@@ -1,4 +1,4 @@
-FROM crops/yocto:ubuntu-@UBUNTU_VERSION@-base
+FROM crops/yocto:@DISTRO@-base
 
 USER root
 

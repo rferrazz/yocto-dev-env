@@ -2,15 +2,16 @@
 #  Apt installer helper for Docker images
 
 ARGS="$*"
-NO_RECOMMENDS="--no-install-recommends"
-RECOMMENDS="--install-recommends"
-if [[ $ARGS =~ "$RECOMMENDS" ]]; then
-    NO_RECOMMENDS=""
-    ARGS=$(sed "s/$RECOMMENDS//g" <<<"$ARGS")
-fi
-
 echo "Installing $ARGS"
 
-apt-get -q update && apt-get -qy install $NO_RECOMMENDS $ARGS \
-    && apt-get -qy autoremove \
-    && apt-get clean 
+if [ -n "$(command -v yum)" ]; then
+    echo "using yum"
+    yum -y install $ARGS && yum -y clean all  && rm -rf /var/cache
+fi
+
+if [ -n "$(command -v apt)" ]; then
+    echo "using apt"
+    apt-get -q update && apt-get -qy install $ARGS \
+        && apt-get -qy autoremove \
+        && apt-get clean
+fi

@@ -14,10 +14,10 @@ function extract_payload {
 
 # $1 workdir
 function create_dockerfile {
-    ubuntu_version=`jq -cr '.host_ubuntu_version' ${VOLUME_NAME}/manifest.json`
+    distro=`jq -cr '.host_distro' ${VOLUME_NAME}/manifest.json`
     extra_pkgs=`jq -r '.extra_pkgs // "" | @sh' ${VOLUME_NAME}/manifest.json`
     sed -e "\
-    s/@UBUNTU_VERSION@/${ubuntu_version}/;\
+    s/@DISTRO@/${distro}/;\
     s/@EXTRA_PKGS@/${extra_pkgs}/;\
     s/@ENV_FOLDER@/${VOLUME_NAME}/" Dockerfile.template > Dockerfile
 }
