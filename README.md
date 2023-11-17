@@ -34,7 +34,7 @@ Let's suppose you are going to work on a yocto based project named `foo`. Downlo
 
 ```json
 {
-    "host_ubuntu_version": "18.04",
+    "host_distro": "ubuntu-16.04",
     "extra_pkgs": ["cvs", "gdb", "device-tree-compiler"],
     "machine": "raspberrypi0-wifi",
     "layers": [
