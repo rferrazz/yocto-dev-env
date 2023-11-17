@@ -9,7 +9,7 @@ if [ -n "$(command -v yum)" ]; then
     yum -y install $ARGS && yum -y clean all  && rm -rf /var/cache
 fi
 
-if [ -n "$(command -v apt)" ]; then
+if [ -n "$(command -v apt-get)" ]; then
     echo "using apt"
     apt-get -q update && apt-get -qy install $ARGS \
         && apt-get -qy autoremove \
