@@ -25,7 +25,7 @@ function create_dockerfile {
 function create_container {
     if [[ $(docker volume ls --filter "name=${VOLUME_NAME}" -q | wc -l ) -eq 0 ]]; then
         echo "creating volume and copying setup script into it"
-        docker volume create --name ${VOLUME_NAME}
+        docker volume create --ignore ${VOLUME_NAME}
         docker run -it --rm -v ${VOLUME_NAME}:/workdir busybox \
             /bin/sh -c "mkdir -p /workdir/src && chown -R 1000:1000 /workdir"
     fi
@@ -39,7 +39,7 @@ function start_container {
     docker rmi $(docker images -qa -f 'dangling=true') || echo "Nothing to remove"
 
     echo "Starting the development container"
-    docker run --rm -it -v ${VOLUME_NAME}:/home/yoctouser -p ${FREE_PORT}:8000 -p ${CODE_PORT}:8080 ${VOLUME_NAME}
+    docker run --rm --cap-add=sys_nice --cap-add=NET_RAW -it -v ${VOLUME_NAME}:/home/yoctouser -p ${FREE_PORT}:8000 -p ${CODE_PORT}:8080 ${VOLUME_NAME}
 }
 
 function main {
