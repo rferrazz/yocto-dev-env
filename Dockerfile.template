@@ -9,7 +9,7 @@ ADD resources/yocto-env /opt/tools/yocto-env
 RUN install_clean vim git wget curl sudo locales
 
 # install vs-code
-ENV CODE_VERSION "4.8.0"
+ENV CODE_VERSION "4.20.0"
 RUN curl -fL https://github.com/coder/code-server/releases/download/v$CODE_VERSION/code-server-$CODE_VERSION-linux-amd64.tar.gz \
   | tar -C /opt -xz && mv /opt/code-server-$CODE_VERSION-linux-amd64 /opt/code-server
 ADD resources/code-server.yaml /opt/
